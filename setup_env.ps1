@@ -47,6 +47,10 @@ if (-not (Test-Path $configPath)) {
 & $cliPath config set directories.downloads (Join-Path $dataDir "staging") --config-file $configPath
 & $cliPath config set directories.user (Join-Path $dataDir "user") --config-file $configPath
 
+# Set Network Timeout Env Var to 1 hour to prevent timeouts on slow connections
+$env:ARDUINO_NETWORK_TIMEOUT = "3600s"
+& $cliPath config set network.timeout 3600s --config-file $configPath
+
 # 3. Update index
 Write-Host "Updating core index..."
 & $cliPath core update-index --config-file $configPath
@@ -73,5 +77,12 @@ foreach ($lib in $libraries) {
     & $cliPath lib install "$lib" --config-file $configPath
 }
 
-Write-Host "Setup Complete!"
-Write-Host "You can now run build_firmware.ps1"
+# 6. Final Verification
+$coreList = & $cliPath core list --config-file $configPath
+if ($coreList -match "esp32:esp32") {
+    Write-Host "Setup Complete! ESP32 Platform installed successfully." -ForegroundColor Green
+    Write-Host "You can now run build_firmware.ps1" -ForegroundColor Cyan
+} else {
+    Write-Host "Setup Failed: ESP32 Platform was NOT installed correctly." -ForegroundColor Red
+    Write-Host "Please check your internet connection and try running this script again." -ForegroundColor Yellow
+}
