@@ -18,5 +18,9 @@ dist/
 Thumbs.db
 .DS_Store
 
+# Local Environment
+tools/
+arduino_data/
+
 # Logs
 *.log
