@@ -1,0 +1,22 @@
+# Build Artifacts
+*.hex
+*.bin
+*.elf
+*.o
+*.a
+*.so
+build/
+dist/
+
+# IDE Files
+.vscode/
+.idea/
+*.sublime-workspace
+*.swp
+
+# OS Files
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
