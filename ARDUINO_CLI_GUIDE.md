@@ -27,6 +27,7 @@ This script will:
     - `Adafruit BNO055`
     - `Adafruit Unified Sensor`
     - `HX711`
+    - `Adafruit BusIO`
 
 > [!NOTE]
 > If you see a security warning running scripts, you may need to allow execution:
