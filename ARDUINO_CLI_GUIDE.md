@@ -1,13 +1,22 @@
+![Windows](https://img.shields.io/badge/OS-Windows-blue?logo=windows)
+![Linux](https://img.shields.io/badge/OS-Linux-orange?logo=linux)
 # Arduino CLI Guide for Loop Production Firmware
 
 This guide explains how to use the provided PowerShell scripts to compile and upload firmware for the Loop Production boards (LCM, MCM, TWM) using `arduino-cli`.
 
 ## Prerequisites
 
-1.  **Windows OS**: These scripts are written in PowerShell.
-2.  **Internet Connection**: Required for the initial setup (downloading `arduino-cli`, cores, and libraries).
-3.  **USB Connection**: Connect your ESP32-S3 board to the computer via USB for uploading.
+### 🪟 Windows
+1.  **PowerShell**: Pre-installed on Windows 10/11.
+2.  **Drivers**: USB drivers for ESP32-S3 (often automatic).
 
+### 🐧 Linux
+1.  **Bash**: Standard terminal.
+2.  **Permissions**: User must be in the `dialout` group for USB upload access:
+    ```bash
+    sudo usermod -a -G dialout $USER
+    ```
+    *(Log out and back in after running this)*
 ## Setup
 
 Before building or uploading for the first time, you must set up the environment.

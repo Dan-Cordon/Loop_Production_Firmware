@@ -13,11 +13,11 @@ $configPath = Join-Path $scriptPath "arduino-cli.yaml"
 # --- CONFIGURATION ---
 $FQBN = "esp32:esp32:esp32s3"
 
-# Project Paths
+# Project Paths (Adjusted to assume scripts run from scripts/windows/)
 $projects = @{
-    "LCM" = Join-Path $scriptPath "LCM_FullMotorControl_V21\LCM_FullMotorControl_V21.ino"
-    "MCM" = Join-Path $scriptPath "MCM_V16\MCM_V16.ino"
-    "TWM" = Join-Path $scriptPath "TWM_GEM_V3_IMU\TWM_GEM_V3_IMU.ino"
+    "LCM" = Join-Path $scriptPath "..\..\LCM_FullMotorControl_V21\LCM_FullMotorControl_V21.ino"
+    "MCM" = Join-Path $scriptPath "..\..\MCM_V16\MCM_V16.ino"
+    "TWM" = Join-Path $scriptPath "..\..\TWM_GEM_V3_IMU\TWM_GEM_V3_IMU.ino"
 }
 
 if (-not (Test-Path $cliPath)) {
@@ -32,7 +32,10 @@ function Build-Project {
     Write-Host "FQBN: $FQBN"
     Write-Host "--------------------------------------------------"
 
-    $cmd = "& `"$cliPath`" compile --fqbn $FQBN --config-file `"$configPath`" `"$path`""
+    # Resolve full path to avoid relative path issues with arduino-cli
+    $fullPath = (Resolve-Path $path).Path
+
+    $cmd = "& `"$cliPath`" compile --fqbn $FQBN --config-file `"$configPath`" `"$fullPath`""
     Invoke-Expression $cmd
     
     if ($LASTEXITCODE -eq 0) {

@@ -16,11 +16,11 @@ $configPath = Join-Path $scriptPath "arduino-cli.yaml"
 # --- CONFIGURATION ---
 $FQBN = "esp32:esp32:esp32s3"
 
-# Project Paths
+# Project Paths (Relative to script location in scripts/windows/)
 $projects = @{
-    "LCM" = Join-Path $scriptPath "LCM_FullMotorControl_V21\LCM_FullMotorControl_V21.ino"
-    "MCM" = Join-Path $scriptPath "MCM_V16\MCM_V16.ino"
-    "TWM" = Join-Path $scriptPath "TWM_GEM_V3_IMU\TWM_GEM_V3_IMU.ino"
+    "LCM" = Join-Path $scriptPath "..\..\LCM_FullMotorControl_V21\LCM_FullMotorControl_V21.ino"
+    "MCM" = Join-Path $scriptPath "..\..\MCM_V16\MCM_V16.ino"
+    "TWM" = Join-Path $scriptPath "..\..\TWM_GEM_V3_IMU\TWM_GEM_V3_IMU.ino"
 }
 
 if (-not (Test-Path $cliPath)) {
@@ -28,23 +28,16 @@ if (-not (Test-Path $cliPath)) {
 }
 
 $path = $projects[$Project]
+$fullPath = (Resolve-Path $path).Path
 
 Write-Host "--------------------------------------------------"
 Write-Host "Uploading $Project..."
-Write-Host "Path: $path"
+Write-Host "Path: $fullPath"
 Write-Host "Port: $Port"
 Write-Host "FQBN: $FQBN"
 Write-Host "--------------------------------------------------"
 
-# Re-compile slightly fast to ensure we have the build artifacts, then upload
-# Note: --input-dir could be used if we saved binaries, but standard upload usually triggers compile check
-# Using 'upload' command. 
-# Sometimes 'compile --upload' is used, but separate upload is cleaner if built.
-# However, for Arduino CLI, 'upload' usually expects a previous build in the temp dir unless we specified an output dir.
-# To be safe and simple, we run compile then upload, or just compile --upload.
-# Let's use compile --upload to ensure it's in sync.
-
-$cmd = "& `"$cliPath`" compile --upload --fqbn $FQBN --port $Port --config-file `"$configPath`" `"$path`""
+$cmd = "& `"$cliPath`" compile --upload --fqbn $FQBN --port $Port --config-file `"$configPath`" `"$fullPath`""
 Invoke-Expression $cmd
 
 if ($LASTEXITCODE -eq 0) {
