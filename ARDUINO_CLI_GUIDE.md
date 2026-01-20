@@ -8,12 +8,23 @@ This guide explains how to use the provided PowerShell scripts to compile and up
 2.  **Internet Connection**: Required for the initial setup (downloading `arduino-cli`, cores, and libraries).
 3.  **USB Connection**: Connect your ESP32-S3 board to the computer via USB for uploading.
 
+> [!NOTE]
+> Windows has a maximum path length limit of 260 characters.
+> To avoid install errors, the project folder should be placed in a high level path such as C:\Loop_Production_Firmware
+
 ## Setup
 
 Before building or uploading for the first time, you must set up the environment.
 
 1.  Open PowerShell in this directory.
-2.  Run the setup script:
+2.  Run the esp download script:
+
+```powershell
+.\robust_download.ps1
+```
+This script uses Windows BITS (Background Intelligent Transfer Service) which supports resume for large downloads. It will pre-download the ESP32 toolchain files and then complete the installation.
+
+3. Run the setup script:
 
 ```powershell
 .\setup_env.ps1
@@ -51,6 +62,22 @@ To compile a firmware project:
 .\build_firmware.ps1 -Project LCM
 ```
 
+## Firmware Configuration
+
+When wanting to compile with specific attributes, the Fully Qualified Board Name (FQBN) must be appended in build_firmware.ps1, and upload_firmware.ps1.
+
+**Example:**
+$FQBN = "esp32:esp32:esp32s3:CDCOnBoot=true"
+
+**Options:**
+Setting Name,Key=Value Addition
+USB CDC On Boot,:CDCOnBoot=true
+USB DFU On Boot,:DFUOnBoot=true
+Upload Mode,:UploadMode=cdc (or default)
+Flash Size,":FlashSize=8M (or 4M, 16M)"
+Partition Scheme,":PartitionScheme=huge_app (or default, min_spiffs)"
+PSRAM,":PSRAM=opi (or qspi, disabled)"
+
 ## Uploading Firmware
 
 To upload the firmware to a board:
@@ -76,15 +103,5 @@ To upload the firmware to a board:
 - `tools/`: Contains the `arduino-cli` executable (created after setup).
 - `arduino_data/`: Contains downloaded cores and libraries (created after setup).
 
-## Troubleshooting
 
-### Download Timeouts During Setup
-
-If `setup_env.ps1` fails with timeout errors during ESP32 core installation, run the robust download script:
-
-```powershell
-.\robust_download.ps1
-```
-
-This script uses Windows BITS (Background Intelligent Transfer Service) which supports resume for large downloads. It will pre-download the ESP32 toolchain files and then complete the installation.
 
