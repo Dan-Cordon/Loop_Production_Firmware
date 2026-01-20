@@ -5,23 +5,30 @@
 $ErrorActionPreference = "Stop"
 
 $scriptPath = $PSScriptRoot
+$stagingDir = Join-Path $scriptPath "arduino_data\staging\packages"
 $cliPath = Join-Path $scriptPath "tools\arduino-cli.exe"
 $configPath = Join-Path $scriptPath "arduino-cli.yaml"
 
-# Arduino-cli expects files in specific cache locations
-$cacheDir = Join-Path $scriptPath "arduino_data\staging\packages"
+# Create staging directory if it doesn't exist
+New-Item -ItemType Directory -Force -Path $stagingDir | Out-Null
 
-# Create cache directory if it doesn't exist
-New-Item -ItemType Directory -Force -Path $cacheDir | Out-Null
+# --- Cleanup: Remove any 0KB or invalid files from previous failed runs ---
+$longName = Join-Path $stagingDir "esp32-arduino-libs-idf-release_v5.5-9bb7aa84-v2.zip"
+if (Test-Path $longName) {
+    if ((Get-Item $longName).Length -lt 1000) {
+        Write-Host "Removing invalid partial download..." -ForegroundColor Yellow
+        Remove-Item $longName -Force
+    }
+}
 
 # Define the files to download for ESP32 3.3.5 on Windows x64
-# CRITICAL: The FileName must match what arduino-cli expects in its package index
 $downloads = @(
     @{
         Name = "esp32-arduino-libs (Pre-compiled libraries)"
-        Url = "https://github.com/espressif/arduino-esp32/releases/download/3.3.5/esp32-arduino-libs-idf-release_v5.5-9bb7aa84-v2.zip"
-        FileName = "esp32-arduino-libs-idf-release_v5.5-9bb7aa84-v2.zip"
-        ExpectedSize = 509489500 # Approx 486 MB
+        # CORRECTED: Download the short name file, save as long name
+        Url = "https://github.com/espressif/arduino-esp32/releases/download/3.3.5/esp32-3.3.5-libs.zip"
+        FileName = "esp32-arduino-libs-idf-release_v5.5-9bb7aa84-v2.zip" 
+        ExpectedSize = 509489500 
     },
     @{
         Name = "esp-x32 (Xtensa toolchain)"
@@ -51,13 +58,13 @@ $downloads = @(
         Name = "openocd-esp32"
         Url = "https://github.com/espressif/openocd-esp32/releases/download/v0.12.0-esp32-20250707/openocd-esp32-win64-0.12.0-esp32-20250707.zip"
         FileName = "openocd-esp32-win64-0.12.0-esp32-20250707.zip"
-        ExpectedSize = 4000000
+        ExpectedSize = 4000000 
     },
     @{
         Name = "esptool_py"
         Url = "https://github.com/espressif/esptool/releases/download/v5.1.0/esptool-v5.1.0-windows-amd64.zip"
         FileName = "esptool-v5.1.0-windows-amd64.zip"
-        ExpectedSize = 5000000
+        ExpectedSize = 5000000 
     }
 )
 
@@ -68,7 +75,7 @@ Write-Host ""
 
 # Download each file using BITS
 foreach ($dl in $downloads) {
-    $targetFile = Join-Path $cacheDir $dl.FileName
+    $targetFile = Join-Path $stagingDir $dl.FileName
     
     if (Test-Path $targetFile) {
         $fileSize = (Get-Item $targetFile).Length
@@ -133,12 +140,11 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Running arduino-cli core install..." -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
-# Set extended timeout - 2 hours
+# Set extended timeout
 $env:ARDUINO_NETWORK_TIMEOUT = "7200s"
 
-# Run arduino-cli with verbose output to see what's happening
-Write-Host "Note: arduino-cli will use cached files from staging directory" -ForegroundColor Yellow
-& $cliPath core install esp32:esp32@3.3.5 --config-file $configPath --verbose
+# Run arduino-cli to complete installation
+& $cliPath core install esp32:esp32 --config-file $configPath
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
@@ -155,9 +161,5 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "Installation may have failed." -ForegroundColor Red
     Write-Host "========================================" -ForegroundColor Red
     Write-Host "Check the output above for errors." -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "Debugging tips:" -ForegroundColor Cyan
-    Write-Host "1. Check that files exist in: $cacheDir" -ForegroundColor White
-    Write-Host "2. Verify file sizes match expected sizes" -ForegroundColor White
-    Write-Host "3. Try deleting arduino_data folder and running setup_env.ps1 again" -ForegroundColor White
+    Write-Host "You may need to run this script again." -ForegroundColor Yellow
 }
