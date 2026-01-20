@@ -8,6 +8,10 @@ This guide explains how to use the provided PowerShell scripts to compile and up
 2.  **Internet Connection**: Required for the initial setup (downloading `arduino-cli`, cores, and libraries).
 3.  **USB Connection**: Connect your ESP32-S3 board to the computer via USB for uploading.
 
+> [!NOTE]
+> Windows has a maximum path length limit of 260 characters.
+> To avoid install errors, the project folder should be placed in a high level path such as C:\Loop_Production_Firmware
+
 ## Setup
 
 Before building or uploading for the first time, you must set up the environment.
@@ -57,6 +61,22 @@ To compile a firmware project:
 ```powershell
 .\build_firmware.ps1 -Project LCM
 ```
+
+## Firmware Configuration
+
+When wanting to compile with specific attributes, the Fully Qualified Board Name (FQBN) must be appended in build_firmware.ps1, and upload_firmware.ps1.
+
+**Example:**
+$FQBN = "esp32:esp32:esp32s3:CDCOnBoot=true"
+
+**Options:**
+Setting Name,Key=Value Addition
+USB CDC On Boot,:CDCOnBoot=true
+USB DFU On Boot,:DFUOnBoot=true
+Upload Mode,:UploadMode=cdc (or default)
+Flash Size,":FlashSize=8M (or 4M, 16M)"
+Partition Scheme,":PartitionScheme=huge_app (or default, min_spiffs)"
+PSRAM,":PSRAM=opi (or qspi, disabled)"
 
 ## Uploading Firmware
 
