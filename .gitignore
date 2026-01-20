@@ -33,3 +33,5 @@ arduino_data/
 /build/
 .bin
 .elf
+
+scripts/
