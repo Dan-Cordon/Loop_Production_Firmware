@@ -13,7 +13,14 @@ This guide explains how to use the provided PowerShell scripts to compile and up
 Before building or uploading for the first time, you must set up the environment.
 
 1.  Open PowerShell in this directory.
-2.  Run the setup script:
+2.  Run the esp download script:
+
+```powershell
+.\robust_download.ps1
+```
+This script uses Windows BITS (Background Intelligent Transfer Service) which supports resume for large downloads. It will pre-download the ESP32 toolchain files and then complete the installation.
+
+3. Run the setup script:
 
 ```powershell
 .\setup_env.ps1
@@ -76,15 +83,5 @@ To upload the firmware to a board:
 - `tools/`: Contains the `arduino-cli` executable (created after setup).
 - `arduino_data/`: Contains downloaded cores and libraries (created after setup).
 
-## Troubleshooting
 
-### Download Timeouts During Setup
-
-If `setup_env.ps1` fails with timeout errors during ESP32 core installation, run the robust download script:
-
-```powershell
-.\robust_download.ps1
-```
-
-This script uses Windows BITS (Background Intelligent Transfer Service) which supports resume for large downloads. It will pre-download the ESP32 toolchain files and then complete the installation.
 
