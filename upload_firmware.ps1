@@ -14,7 +14,7 @@ $cliPath = Join-Path $scriptPath "tools\arduino-cli.exe"
 $configPath = Join-Path $scriptPath "arduino-cli.yaml"
 
 # --- CONFIGURATION ---
-$FQBN = "esp32:esp32:esp32s3"
+$FQBN = "esp32:esp32:esp32s3:CDCOnBoot=cdc"
 
 # Project Paths
 $projects = @{

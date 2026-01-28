@@ -67,11 +67,11 @@ To compile a firmware project:
 When wanting to compile with specific attributes, the Fully Qualified Board Name (FQBN) must be appended in build_firmware.ps1, and upload_firmware.ps1.
 
 **Example:**
-$FQBN = "esp32:esp32:esp32s3:CDCOnBoot=true"
+$FQBN = "esp32:esp32:esp32s3:CDCOnBoot=cdc"
 
 **Options:**
 Setting Name,Key=Value Addition
-USB CDC On Boot,:CDCOnBoot=true
+USB CDC On Boot,:CDCOnBoot=cdc
 USB DFU On Boot,:DFUOnBoot=true
 Upload Mode,:UploadMode=cdc (or default)
 Flash Size,":FlashSize=8M (or 4M, 16M)"
